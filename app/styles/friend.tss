@@ -1,0 +1,4 @@
+'.friend': {
+	backgroundColor: '#fff',
+	color: '#333'
+}

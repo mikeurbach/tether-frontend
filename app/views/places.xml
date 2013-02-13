@@ -1,0 +1,9 @@
+<Alloy>
+	<!-- <Collection src="places" /> -->
+	
+	<Tab title="<Require>">
+		<Window id="window" title="Require">
+			
+		</Window>	
+	</Tab>
+</Alloy>

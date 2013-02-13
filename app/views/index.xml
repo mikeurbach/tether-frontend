@@ -1,0 +1,6 @@
+<Alloy>
+	<TabGroup>
+		<Require src="friends" />
+		<!-- <Require src="places" /> -->
+	</TabGroup>
+</Alloy>

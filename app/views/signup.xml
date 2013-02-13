@@ -1,0 +1,5 @@
+<Alloy>
+    <Window id="signup">
+        <LoginButton ns="Ti.Facebook" />
+    </Window>
+</Alloy>
