@@ -16,20 +16,21 @@ Ti.Facebook.addEventListener('login', function(e) {
 		        // Set up a connection to our server
 		        var url = "http://10.0.2.2:5000/people";
 				var xhr = Ti.Network.createHTTPClient({
-				    onload: function(ev) {
+ 				    onload: function(ev) {
 						// Save the user's id
 				        Ti.API.info(this.responseText);
 				        json = JSON.parse(this.responseText);
-				        Ti.App.Properties.setString('_id', json._id);
+				        console.log(json);
+				        // Ti.App.Properties.setString('_id', json._id);
 				    },
 				    onerror: function(ev) {
 						// this function is called when an error occurs, including a timeout
-				        Ti.API.debug(ev.error);
+				        Ti.API.info(ev.error);
 				    },
 				    timeout:5000  /* in milliseconds */
 				});
 				
-				// POST the Facebook info to /people/signup/
+				// POST the Facebook info to /people
 				xhr.open("POST", url);
 				xhr.send({
 					info: e.result,

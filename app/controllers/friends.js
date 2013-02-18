@@ -6,9 +6,13 @@ function fetchSuccess(coll, resp, opts){
 	// iterate over friends, building up data array
 	var friendsData = [];
 	coll.map(function(friend){
+		Ti.API.info(JSON.stringify(friend));
+		Ti.API.info(typeof(friend));
+
 		// arguments for making a friend view
 		var args = {
-			name: friend.get('name')
+			name: friend["name"],
+			place: friend["location"]["place_name"]
 		};
 		
 		// make the view, add it to the array
@@ -27,7 +31,7 @@ function fetchError(coll, xhr, opts){
 
 // function to refresh the people from DB
 function update(){
-	// fetch the user's friends for the first time
+	// fetch the user's friends 
 	friends.fetch({
 		success: fetchSuccess, 
 		error: fetchError

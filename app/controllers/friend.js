@@ -1,2 +1,3 @@
 var args = arguments[0] || {};
-$.friend.title = args.name || '';
+var text = args.name + ' is at ' + args.place;
+$.friend.title = text || '';
