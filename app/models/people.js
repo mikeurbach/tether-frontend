@@ -1,9 +1,9 @@
 exports.definition = {
 	config: {
-		"URL": "http://stormy-shelf-6456.herokuapp.com/people/50fa2a5e0f77a61e3612052e/friends",
+		"URL": "http://10.0.2.2:5000/people",
 		"adapter": {
 			"type": "restapi",
-			"collection_name": "friends"
+			"collection_name": "people"
 		}
 	},
 	extendModel: function(Model) {      

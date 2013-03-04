@@ -1,0 +1,10 @@
+<Alloy>
+	<Collection src="people" />
+	<Tab title="Friends">
+		<Window class="window">
+			<TableView id="friendsTable"> <!-- dataCollection="friends" --> 
+				<Require src="person" />
+			</TableView>
+		</Window>
+	</Tab>
+</Alloy>

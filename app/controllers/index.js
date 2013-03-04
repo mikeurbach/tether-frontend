@@ -22,13 +22,11 @@ function putLocation(coords){
 }
 
 // check if we have a signed up user
-Ti.App.Properties.removeProperty('_id'); // force a signup
-Ti.API.info('_id: ' + Ti.App.Properties.getProperty('_id'));
+Ti.API.info('_id (client property): ' + Ti.App.Properties.getString('_id'));
+//Ti.App.Properties.removeProperty('_id');
 if(!Ti.App.Properties.hasProperty('_id')){
 	// sign them up
-	Ti.API.info('about to create controller');
-	Alloy.createController('signup');	
-	var wait = true;
+	var signup = Alloy.createController('signup');	
 }
 
 // set a location listener, if location services are available
@@ -51,9 +49,10 @@ if (Ti.Geolocation.locationServicesEnabled) {
 }
 
 // this is a gipsy way to do it
-if(wait){
+if(signup){
 	Ti.Facebook.addEventListener('login', function(e){
 		$.index.open();
+		signup.destroy();
 	})
 } else {
 	$.index.open();	

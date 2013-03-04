@@ -1,5 +1,5 @@
 // get our people collection
-var friends = Alloy.createCollection('friends');
+var friends = Alloy.createCollection('people');
 
 // success callback for fetch
 function fetchSuccess(coll, resp, opts){
@@ -7,16 +7,15 @@ function fetchSuccess(coll, resp, opts){
 	var friendsData = [];
 	coll.map(function(friend){
 		Ti.API.info(JSON.stringify(friend));
-		Ti.API.info(typeof(friend));
 
 		// arguments for making a friend view
 		var args = {
-			name: friend["name"],
-			place: friend["location"]["place_name"]
+			name: friend.attributes.name,
+			place: friend.attributes.location.place_name
 		};
 		
 		// make the view, add it to the array
-		var friendView = Alloy.createController('friend', args).getView();
+		var friendView = Alloy.createController('person', args).getView();
 		friendsData.push(friendView);
 	});
 	
@@ -34,7 +33,10 @@ function update(){
 	// fetch the user's friends 
 	friends.fetch({
 		success: fetchSuccess, 
-		error: fetchError
+		error: fetchError,
+		urlparams: {
+			'_id': Ti.App.Properties.getString('_id')
+		}
 	});
 }
 

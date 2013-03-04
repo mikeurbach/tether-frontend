@@ -11,17 +11,16 @@ Ti.Facebook.addEventListener('login', function(e) {
 		Ti.Facebook.requestWithGraphPath('me', {}, 'GET', function(e) {
 		    if (e.success) {
 		    	// If we got a response from Facebook
-		        Ti.API.debug(e.result);
+		        var fb_info = JSON.parse(e.result);
 		        
 		        // Set up a connection to our server
 		        var url = "http://10.0.2.2:5000/people";
 				var xhr = Ti.Network.createHTTPClient({
  				    onload: function(ev) {
 						// Save the user's id
-				        Ti.API.info(this.responseText);
-				        json = JSON.parse(this.responseText);
-				        console.log(json);
-				        // Ti.App.Properties.setString('_id', json._id);
+						var json = JSON.parse(this.responseText);
+						Ti.API.info('_id (server generated): ' + json._id);
+				        Ti.App.Properties.setString('_id', json._id);
 				    },
 				    onerror: function(ev) {
 						// this function is called when an error occurs, including a timeout
@@ -33,12 +32,11 @@ Ti.Facebook.addEventListener('login', function(e) {
 				// POST the Facebook info to /people
 				xhr.open("POST", url);
 				xhr.send({
-					info: e.result,
+					name: fb_info.name,
+					id: fb_info.id,
 					token: Ti.Facebook.accessToken,
 					exp: Ti.Facebook.expirationDate
 				});
-				
-				$.signup.close();
 		    } else if (e.error) {
 		    	// If we got an error from Facebook
 		        Ti.API.debug(e.error);
@@ -55,5 +53,4 @@ Ti.Facebook.addEventListener('logout', function(e) {
     Ti.API.debug('Logged out');
 });
 
-Ti.API.info('inside controller');
 $.signup.open();
