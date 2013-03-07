@@ -1,6 +1,7 @@
 exports.definition = {
 	config: {
-		"URL": "http://10.0.2.2:5000/people",
+		//"URL": "http://10.0.2.2:5000/people",
+		"URL": "http://stormy-shelf-6456.herokuapp.com/people",
 		"adapter": {
 			"type": "restapi",
 			"collection_name": "people"

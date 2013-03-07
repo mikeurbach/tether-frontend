@@ -13,30 +13,38 @@ Ti.Facebook.addEventListener('login', function(e) {
 		    	// If we got a response from Facebook
 		        var fb_info = JSON.parse(e.result);
 		        
-		        // Set up a connection to our server
-		        var url = "http://10.0.2.2:5000/people";
-				var xhr = Ti.Network.createHTTPClient({
- 				    onload: function(ev) {
-						// Save the user's id
-						var json = JSON.parse(this.responseText);
-						Ti.API.info('_id (server generated): ' + json._id);
-				        Ti.App.Properties.setString('_id', json._id);
-				    },
-				    onerror: function(ev) {
-						// this function is called when an error occurs, including a timeout
-				        Ti.API.info(ev.error);
-				    },
-				    timeout:5000  /* in milliseconds */
-				});
-				
-				// POST the Facebook info to /people
-				xhr.open("POST", url);
-				xhr.send({
-					name: fb_info.name,
-					id: fb_info.id,
-					token: Ti.Facebook.accessToken,
-					exp: Ti.Facebook.expirationDate
-				});
+		        // Get our person model instance
+		        var person = Alloy.Models.instance('people');
+		        
+		        // set up some attributes to send for the create
+		        var atts = {
+		        	name: fb_info.name,
+		        	fid: fb_info.id,
+		        	token: Ti.Facebook.accessToken,
+		        	exp: Ti.Facebook.expirationDate
+		        };
+		        
+		        // success and error callbacks
+		        var opts = {
+		        	success: function(responseJSON, responseText){
+		        		console.log(JSON.stringify(responseJSON));
+		        		Ti.API.info('_id (server generated): ' + responseJSON.id);
+		        		Ti.App.Properties.setString('_id', responseJSON.id);
+		        	},
+		        	error: function(responseJSON, responseText){
+		        		// already taken care of in restapi
+		        		alert(responseText);
+		        	}
+		        };
+		        
+		        // POST the new user
+		        person.save(atts, opts);
+		        
+		        // send an initial location PUT
+		        Ti.Geolocation.fireEvent('location');
+
+				// GET the first friends update
+				Ti.App.fireEvent('update_friends');
 		    } else if (e.error) {
 		    	// If we got an error from Facebook
 		        Ti.API.debug(e.error);

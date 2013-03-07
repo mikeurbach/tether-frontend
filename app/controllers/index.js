@@ -1,24 +1,36 @@
 // function to send location data to the server
 function putLocation(coords){
-	// set up the url
-	var url = "http://stormy-shelf-6456.herokuapp.com/people/50fa2a5e0f77a61e3612052e/location";
-	url = url + '?lon=' + coords.longitude;
-	url = url + '&lat=' + coords.latitude;
-	url = url + '&acc=' + coords.accuracy;
-
-	var xhr = Ti.Network.createHTTPClient({
-	    onload: function(e) {
-			// nothing to receive
+	// very important that we have already called person.save() once already
+	if(!Ti.App.Properties.hasProperty('_id')){
+		return;
+	}
+	
+	// get our person model instance
+	var person = Alloy.Models.instance('people');
+	
+	// set our location data
+	var params = {
+		data: {
+			lon: coords.longitude,
+			lat: coords.latitude,
+			acc: coords.accuracy
+		}
+	};
+	
+	// set our callbacks
+	var opts = {
+		success: function(responseJSON, responseText){
 			alert('put location');
-	    },
-	    onerror: function(e) {
-	        // uh oh
-	        alert(e);
-	    },
-	    timeout: 5000
-	});
-	xhr.open("PUT", url);
-	xhr.send();
+		},
+		error: function(responseJSON, responseText){
+			alert(responseText);
+		}
+	};
+	
+	// PUT to the server
+	// TODO: can we use the idAttribute here?
+	person.id = Ti.App.Properties.getString('_id');
+	person.save(params, opts);
 }
 
 // check if we have a signed up user
@@ -31,18 +43,37 @@ if(!Ti.App.Properties.hasProperty('_id')){
 
 // set a location listener, if location services are available
 if (Ti.Geolocation.locationServicesEnabled) {
-	// set some properties on the location module
+	// set some generic properties on the location module
     Ti.Geolocation.purpose = 'Let your friends know where you are';
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_HIGH;
-    Ti.Geolocation.distanceFilter = 50;
+    Ti.Geolocation.distanceFilter = 100;
+    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
+    
+	// set up custom properties for android
+	Ti.Geolocation.Android.manualMode = true;
+	
+	var providerGps = Ti.Geolocation.Android.createLocationProvider({
+    	name: Ti.Geolocation.PROVIDER_GPS,
+    	minUpdateDistance: 100,
+    	minUpdateTime: 60
+	});
+	Ti.Geolocation.Android.addLocationProvider(providerGps);
+
+	var ruleGps = Ti.Geolocation.Android.createLocationRule({
+		provider: Ti.Geolocation.PROVIDER_GPS,
+		accuracy: 50,
+		maxAge: 1000 * 60 * 5
+	});
+	Ti.Geolocation.Android.addLocationRule(ruleGps);
+
     
     // listen for location changes
     Ti.Geolocation.addEventListener('location', function(e) {
         if (e.error) {
             alert('Error: ' + e.error);
         } else {
-            putLocation(e.coords);
-        }
+       		//putLocation(e.coords);	
+       	}
     });
 } else {
     alert('Please enable location services');

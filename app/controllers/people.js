@@ -28,8 +28,9 @@ function fetchError(coll, xhr, opts){
 	// already taken care of in restapi
 }
 
-// function to refresh the people from DB
-function update(){
+
+// listen for update_friends event
+Ti.App.addEventListener('update_friends', function(){
 	// fetch the user's friends 
 	friends.fetch({
 		success: fetchSuccess, 
@@ -37,9 +38,11 @@ function update(){
 		urlparams: {
 			'_id': Ti.App.Properties.getString('_id')
 		}
-	});
-}
+	})
+});
 
-// get friends, and refresh every minute
-update();
-setInterval(update, 60000);
+// update friends now, and every minute
+Ti.App.fireEvent('update_friends');
+setInterval(function(){
+	Ti.App.fireEvent('update_friends');
+}, 60000);
