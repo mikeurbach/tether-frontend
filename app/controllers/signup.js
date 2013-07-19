@@ -39,12 +39,6 @@ Ti.Facebook.addEventListener('login', function(e) {
 		        
 		        // POST the new user
 		        person.save(atts, opts);
-		        
-		        // send an initial location PUT
-		        Ti.Geolocation.fireEvent('location');
-
-				// GET the first friends update
-				Ti.App.fireEvent('update_friends');
 		    } else if (e.error) {
 		    	// If we got an error from Facebook
 		        Ti.API.debug(e.error);

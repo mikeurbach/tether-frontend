@@ -20,7 +20,7 @@ function putLocation(coords){
 	// set our callbacks
 	var opts = {
 		success: function(responseJSON, responseText){
-			alert('put location');
+			//alert('put location');
 		},
 		error: function(responseJSON, responseText){
 			alert(responseText);
@@ -72,7 +72,7 @@ if (Ti.Geolocation.locationServicesEnabled) {
         if (e.error) {
             alert('Error: ' + e.error);
         } else {
-       		//putLocation(e.coords);	
+       		putLocation(e.coords);	
        	}
     });
 } else {
@@ -82,9 +82,32 @@ if (Ti.Geolocation.locationServicesEnabled) {
 // this is a gipsy way to do it
 if(signup){
 	Ti.Facebook.addEventListener('login', function(e){
+		// change to the main window
 		$.index.open();
 		signup.destroy();
-	})
+
+		// GET friends
+		Ti.App.fireEvent('update_friends');
+
+		// PUT location	
+		if (Ti.Geolocation.locationServicesEnabled) {
+			Ti.Geolocation.getCurrentPosition(function(e) {
+				putLocation(e.coords);
+			});
+		}
+	});
 } else {
-	$.index.open();	
+	// open the main window
+	$.index.open();
+
+	// GET friends
+	Ti.App.fireEvent('update_friends');
+
+	// PUT location	
+	if (Ti.Geolocation.locationServicesEnabled) {
+		Ti.Geolocation.getCurrentPosition(function(e) {
+			putLocation(e.coords);
+		});
+	}
 }
+

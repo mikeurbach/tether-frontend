@@ -7,7 +7,6 @@ function guid() {
 }
 
 function InitAdapter(config) {
-    RestAPIBaseUrl = config.URL;
     return {};
 }
 
@@ -36,7 +35,7 @@ function apiCall(_options, _callback) {
     xhr.send(_options.data || null);
 }
 
-function Sync(model, method, opts) {
+function Sync(method, model, opts) {
     var methodMap = {
         create: "POST",
         read: "GET",
@@ -46,7 +45,7 @@ function Sync(model, method, opts) {
     params.type = type;
     params.headers = params.headers || {};
     if (!params.url) {
-        params.url = RestAPIBaseUrl || model.url();
+        params.url = model.config.URL || model.url();
         if (!params.url) {
             Ti.API.error("[REST API] ERROR: NO BASE URL");
             return;
@@ -121,6 +120,7 @@ function Sync(model, method, opts) {
         break;
       case "read":
         model.id && (params.url = params.url + "/" + model.id);
+        params.urlparams && (params.url += "?" + encodeData(params.urlparams));
         apiCall(params, function(_response) {
             if (_response.success) {
                 var data = JSON.parse(_response.responseText), values = [];
@@ -142,17 +142,21 @@ function Sync(model, method, opts) {
     }
 }
 
-var RestAPIBaseUrl = null, _ = require("alloy/underscore")._, Alloy = require("alloy"), Backbone = Alloy.Backbone;
+var encodeData = function(obj) {
+    var str = [];
+    for (var p in obj) str.push(Ti.Network.encodeURIComponent(p) + "=" + Ti.Network.encodeURIComponent(obj[p]));
+    return str.join("&");
+}, _ = require("alloy/underscore")._, Alloy = require("alloy"), Backbone = Alloy.Backbone;
 
 module.exports.sync = Sync;
 
-module.exports.beforeModelCreate = function(config) {
+module.exports.beforeModelCreate = function(config, name) {
     config = config || {};
     InitAdapter(config);
     return config;
 };
 
-module.exports.afterModelCreate = function(Model) {
+module.exports.afterModelCreate = function(Model, name) {
     Model = Model || {};
     Model.prototype.config.Model = Model;
     return Model;

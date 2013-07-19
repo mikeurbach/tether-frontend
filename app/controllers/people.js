@@ -41,8 +41,7 @@ Ti.App.addEventListener('update_friends', function(){
 	})
 });
 
-// update friends now, and every minute
-Ti.App.fireEvent('update_friends');
+// update every minute
 setInterval(function(){
 	Ti.App.fireEvent('update_friends');
 }, 60000);
